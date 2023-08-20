@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac Toe - Game | Shozon-Roy   </title>
+   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Raleway:wght@700&display=swap"
+      rel="stylesheet" />
+
+<style type="text/css" media="all">
+  
+ * {
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-family: "Raleway", sans-serif;
+  }
+  body {
+    height: 100vh;
+    background: -o-linear-gradient(315deg, #7928E4, #E5B2CA);
+    background: linear-gradient(135deg,  #7928E4, #E5B2CA);
+  }
+  html {
+    font-size: 16px;
+  }
+  .box {
+    padding: 1.5em 0;
+    position: absolute;
+    -webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+  }
+  .wrapper {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+  }
+  .container {
+    width: 80vmin;
+    height: 80vmin;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    gap: 2vmin;
+  }
+  .button-option {
+    background-color: #ffffff;
+    height: 25vmin;
+    width: 25vmin;
+    font-size: 12vmin;
+    border: none;
+    -webkit-box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    color: #252525;
+  }
+  #restart {
+    margin-top: 1em;
+    padding: 0.7em 0;
+    background-color: #0a0027;
+    color: #ffffff;
+    font-size: 1.3em;
+    border-radius: 5px;
+    border: none;
+  }
+  .popup.hide {
+    display: none;
+  }
+  .popup {
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    background: -o-linear-gradient(315deg, #7928E4, #E5B2CA);
+    background: linear-gradient(135deg,  #7928E4, #E5B2CA);
+    z-index: 2;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    gap: 1em;
+    font-size: 12vmin;
+  }
+  #new-game {
+    padding: 0.5em 1em;
+    background-color: #0a0027;
+    color: #ffffff;
+    font-size: 0.6em;
+    border-radius: 0.2em;
+    border: none;
+  }
+  #message {
+    color: #ffffff;
+    text-align: center;
+    font-size: 1em;
+  }
+  a {
+    font-size: 1.3em;
+    background-color: #ffffff;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 0.6em 0;
+    border-radius: 5px;
+    color: #d161ff;
+    letter-spacing: 0.05em;
+    margin-top: 1em;
+  }
+    </style>
+
+  </head>
+  <body>
+    <div class="box">
+      <div class="wrapper">
+        <div class="container">
+          <button class="button-option"></button>
+          <button class="button-option"></button>
+          <button class="button-option"></button>
+          <button class="button-option"></button>
+          <button class="button-option"></button>
+          <button class="button-option"></button>
+          <button class="button-option"></button>
+          <button class="button-option"></button>
+          <button class="button-option"></button>
+        </div>
+        <button id="restart">Restart</button>
+      </div>
+    </div>
+    <div class="popup hide">
+      <p id="message"></p>
+      <button id="new-game">New Game</button>
+    </div>
+
+    <script>
+  let btnRef = document.querySelectorAll(".button-option");
+let popupRef = document.querySelector(".popup");
+let newgameBtn = document.getElementById("new-game");
+let restartBtn = document.getElementById("restart");
+let msgRef = document.getElementById("message");
+//Winning Pattern Array
+let winningPattern = [
+  [0, 1, 2],
+  [0, 3, 6],
+  [2, 5, 8],
+  [6, 7, 8],
+  [3, 4, 5],
+  [1, 4, 7],
+  [0, 4, 8],
+  [2, 4, 6],
+];
+//Player 'X' plays first
+let xTurn = true;
+let count = 0;
+
+//Disable All Buttons
+const disableButtons = () => {
+  btnRef.forEach((element) => (element.disabled = true));
+  //enable popup
+  popupRef.classList.remove("hide");
+};
+
+//Enable all buttons (For New Game and Restart)
+const enableButtons = () => {
+  btnRef.forEach((element) => {
+    element.innerText = "";
+    element.disabled = false;
+  });
+  //disable popup
+  popupRef.classList.add("hide");
+};
+
+//This function is executed when a player wins
+const winFunction = (letter) => {
+  disableButtons();
+  if (letter == "X") {
+    msgRef.innerHTML = "&#x1F389; <br> 'X' Wins";
+  } else {
+    msgRef.innerHTML = "&#x1F389; <br> 'O' Wins";
+  }
+};
+
+//Function for draw
+const drawFunction = () => {
+  disableButtons();
+  msgRef.innerHTML = "&#x1F60E; <br> It's a Draw";
+};
+
+//New Game
+newgameBtn.addEventListener("click", () => {
+  count = 0;
+  enableButtons();
+});
+restartBtn.addEventListener("click", () => {
+  count = 0;
+  enableButtons();
+});
+
+//Win Logic
+const winChecker = () => {
+  //Loop through all win patterns
+  for (let i of winningPattern) {
+    let [element1, element2, element3] = [
+      btnRef[i[0]].innerText,
+      btnRef[i[1]].innerText,
+      btnRef[i[2]].innerText,
+    ];
+    //Check if elements are filled
+    //If 3 empty elements are same and would give win as would
+    if (element1 != "" && (element2 != "") & (element3 != "")) {
+      if (element1 == element2 && element2 == element3) {
+        //If all 3 buttons have same values then pass the value to winFunction
+        winFunction(element1);
+      }
+    }
+  }
+};
+
+//Display X/O on click
+btnRef.forEach((element) => {
+  element.addEventListener("click", () => {
+    if (xTurn) {
+      xTurn = false;
+      //Display X
+      element.innerText = "X";
+      element.disabled = true;
+    } else {
+      xTurn = true;
+      //Display Y
+      element.innerText = "O";
+      element.disabled = true;
+    }
+    //Increment count on each click
+    count += 1;
+    if (count == 9) {
+      drawFunction();
+    }
+    //Check for win on every click
+    winChecker();
+  });
+});
+//Enable Buttons and disable popup on page load
+window.onload = enableButtons;
+    </script>
+  </body>
+</html>
